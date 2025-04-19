@@ -133,3 +133,14 @@ button + button {
   max-width: 100%;
 }
 
+.institute-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.institute-filter select {
+  width: 840px;
+  max-width: 100%;
+}
+

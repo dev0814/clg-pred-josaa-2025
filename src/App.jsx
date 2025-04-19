@@ -17,6 +17,7 @@ function App() {
   const [states, setStates] = useState([]);
   const [sortDirection, setSortDirection] = useState("asc");
   const [resultProgramFilter, setResultProgramFilter] = useState("");
+  const [resultInstituteFilter, setResultInstituteFilter] = useState("");
 
   useEffect(() => {
     if (round) {
@@ -33,7 +34,7 @@ function App() {
         })
         .catch((err) => {
           console.error("Error loading JSON file:", err);
-          alert("Error loading data for selected round. ");
+          alert("Error loading data for selected round.");
         });
     } else {
       setData([]);
@@ -67,6 +68,7 @@ function App() {
     setFiltered(results);
     setSortDirection("asc");
     setResultProgramFilter("");
+    setResultInstituteFilter("");
   };
 
   const handleReset = () => {
@@ -78,6 +80,7 @@ function App() {
     setUsername("");
     setFiltered([]);
     setResultProgramFilter("");
+    setResultInstituteFilter("");
   };
 
   const sortClosingRank = () => {
@@ -129,9 +132,11 @@ function App() {
     doc.save(`JoSAA_${username.replace(/\s+/g, "_")}_Predictions.pdf`);
   };
 
-  const displayedResults = resultProgramFilter
-    ? filtered.filter(row => row["Academic Program Name"] === resultProgramFilter)
-    : filtered;
+  const displayedResults = filtered.filter(row => {
+    const programMatch = resultProgramFilter ? row["Academic Program Name"] === resultProgramFilter : true;
+    const instituteMatch = resultInstituteFilter ? row["Institute Name"] === resultInstituteFilter : true;
+    return programMatch && instituteMatch;
+  });
 
   return (
     <div className="container">
@@ -193,7 +198,7 @@ function App() {
             </div>
 
             <div className="program-filter">
-              <label style={{ marginRight: "10px" }}>Filter by Program:</label>
+              <label>Filter by Program:</label>
               <select
                 value={resultProgramFilter}
                 onChange={(e) => setResultProgramFilter(e.target.value)}
@@ -201,6 +206,19 @@ function App() {
                 <option value="">All Programs</option>
                 {[...new Set(filtered.map(row => row["Academic Program Name"]))].sort().map((p, i) => (
                   <option key={i} value={p}>{p}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="institute-filter">
+              <label>Filter by Institute:</label>
+              <select
+                value={resultInstituteFilter}
+                onChange={(e) => setResultInstituteFilter(e.target.value)}
+              >
+                <option value="">All Institutes</option>
+                {[...new Set(filtered.map(row => row["Institute Name"]))].sort().map((iName, i) => (
+                  <option key={i} value={iName}>{iName}</option>
                 ))}
               </select>
             </div>
